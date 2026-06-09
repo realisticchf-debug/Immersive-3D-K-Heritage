@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>천록 | AR 뷰어</title>
 
+  <!-- model-viewer -->
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,9 +23,10 @@
       width: 100%; height: 100%;
       background: var(--ink);
       overflow: hidden;
-      font-family: 'Pretendard', sans-serif;
+      font-family: 'Noto Serif KR', 'Georgia', serif;
     }
 
+    /* 배경 텍스처 */
     body::before {
       content: '';
       position: fixed; inset: 0;
@@ -36,6 +37,7 @@
       z-index: 0;
     }
 
+    /* model-viewer 전체화면 */
     model-viewer {
       position: fixed; inset: 0;
       width: 100%; height: 100%;
@@ -44,6 +46,7 @@
       --poster-color: transparent;
     }
 
+    /* 상단 타이틀 오버레이 */
     .title-overlay {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -77,6 +80,7 @@
       letter-spacing: 0.1em;
     }
 
+    /* 금 장식선 */
     .deco-line {
       width: 32px; height: 1px;
       background: var(--gold);
@@ -84,6 +88,7 @@
       opacity: 0.6;
     }
 
+    /* 하단 안내 (PC 전용) */
     .desktop-notice {
       display: none;
       position: fixed;
@@ -106,6 +111,7 @@
       content: '📱 ';
     }
 
+    /* AR 버튼 커스텀 스타일 (model-viewer slot) */
     #ar-button {
       position: absolute;
       bottom: 32px; left: 50%; transform: translateX(-50%);
@@ -114,7 +120,7 @@
       border: none;
       border-radius: 40px;
       padding: 14px 36px;
-      font-family: 'Pretendard', sans-serif;
+      font-family: 'Noto Serif KR', serif;
       font-size: 15px;
       font-weight: 700;
       letter-spacing: 0.1em;
@@ -128,6 +134,7 @@
       box-shadow: 0 2px 10px rgba(184,148,63,0.25);
     }
 
+    /* 로딩 프로그레스바 */
     .progress-bar {
       position: fixed;
       bottom: 0; left: 0;
@@ -138,13 +145,19 @@
       width: 0%;
     }
 
+    /* PC에서는 AR 버튼 숨김 처리는 model-viewer가 자동으로 함 */
     @media (hover: hover) and (pointer: fine) {
       .desktop-notice { display: block; }
     }
   </style>
+
+  <!-- 한국어 세리프 폰트 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap" />
 </head>
 <body>
 
+  <!-- 타이틀 오버레이 -->
   <div class="title-overlay">
     <div class="title-label">AR 뷰어 · K-Heritage</div>
     <div class="deco-line"></div>
@@ -152,27 +165,27 @@
     <div class="title-sub">경복궁 속 상상의 동물</div>
   </div>
 
+  <!-- model-viewer -->
   <model-viewer
     id="viewer"
     src="assets/test.glb"
     ar
     ar-modes="webxr scene-viewer quick-look"
-    ar-placement="floor"
     camera-controls
     auto-rotate
-    autoplay
-    camera-orbit="0deg 75deg 50.0m"
-    min-camera-orbit="auto auto 0.5m"
-    max-camera-orbit="auto auto 10m"
     shadow-intensity="1"
     exposure="1"
     poster=""
     loading="eager"
   >
+    <!-- AR 버튼 슬롯 -->
     <button slot="ar-button" id="ar-button">AR로 감상하기</button>
   </model-viewer>
 
+  <!-- PC 안내 메시지 -->
   <div class="desktop-notice">모바일에서 접속하면 AR로 체험할 수 있습니다</div>
+
+  <!-- 로딩 프로그레스바 -->
   <div class="progress-bar" id="progress-bar"></div>
 
   <script>
@@ -188,24 +201,26 @@
       }
     });
 
-    // 로드 완료 시 애니메이션 재생
-    viewer.addEventListener('load', () => {
-      viewer.play();
-    });
-
-    // AR 진입/종료 처리
-    // const audioSrc = 'assets/01.dani.wav';
+    // AR 시작 시 오디오 자동재생
+    //const audioSrc = 'assets/01.dani.wav';
     let audio = null;
 
     viewer.addEventListener('ar-status', (e) => {
       if (e.detail.status === 'session-started') {
-        viewer.play(); // 애니메이션 재생
-        // if (!audio) audio = new Audio(audioSrc);
-        // audio.currentTime = 0;
-        // audio.play().catch(() => {});
+        if (!audio) {
+          audio = new Audio(audioSrc);
+          audio.loop = false;
+        }
+        audio.currentTime = 0;
+        audio.play().catch(() => {
+          // 브라우저 정책으로 차단될 경우 무시
+        });
       }
       if (e.detail.status === 'not-presenting') {
-        // if (audio) { audio.pause(); audio.currentTime = 0; }
+        if (audio) {
+          audio.pause();
+          audio.currentTime = 0;
+        }
       }
     });
   </script>
