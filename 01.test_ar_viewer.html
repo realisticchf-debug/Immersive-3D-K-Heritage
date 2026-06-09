@@ -207,6 +207,7 @@
 
     /* 모델 로드 완료 시 애니메이션 재생 */
     viewer.addEventListener('load', () => {
+      viewer.animationName = 'Skin:root';
       viewer.play();
     });
 
@@ -218,6 +219,7 @@
 
       /* AR 시작 시: 애니메이션 재생 + 오디오 재생 */
       if (e.detail.status === 'session-started') {
+        viewer.animationName = 'Skin:root';
         viewer.play();
         // if (!audio) audio = new Audio(audioSrc);
         // audio.currentTime = 0;
