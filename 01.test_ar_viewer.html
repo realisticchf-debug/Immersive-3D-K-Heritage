@@ -232,6 +232,11 @@
       }
 
     });
+      /* AR 버튼 클릭 시 애니메이션 미리 세팅 */
+document.getElementById('ar-button').addEventListener('click', () => {
+  viewer.animationName = 'Skin:root';
+  viewer.play();
+});
   </script>
 
 </body>
