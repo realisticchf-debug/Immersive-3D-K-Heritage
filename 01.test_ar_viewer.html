@@ -8,6 +8,9 @@
   <!-- model-viewer -->
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 
+  <!-- Pretendard 폰트 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -23,7 +26,7 @@
       width: 100%; height: 100%;
       background: var(--ink);
       overflow: hidden;
-      font-family: 'Noto Serif KR', 'Georgia', serif;
+      font-family: 'Pretendard', sans-serif;
     }
 
     /* 배경 텍스처 */
@@ -120,7 +123,7 @@
       border: none;
       border-radius: 40px;
       padding: 14px 36px;
-      font-family: 'Noto Serif KR', serif;
+      font-family: 'Pretendard', sans-serif;
       font-size: 15px;
       font-weight: 700;
       letter-spacing: 0.1em;
@@ -145,15 +148,10 @@
       width: 0%;
     }
 
-    /* PC에서는 AR 버튼 숨김 처리는 model-viewer가 자동으로 함 */
     @media (hover: hover) and (pointer: fine) {
       .desktop-notice { display: block; }
     }
   </style>
-
-  <!-- 한국어 세리프 폰트 -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap" />
 </head>
 <body>
 
@@ -171,14 +169,15 @@
     src="assets/test.glb"
     ar
     ar-modes="webxr scene-viewer quick-look"
+    ar-placement="floor"
     camera-controls
     auto-rotate
+    autoplay
     shadow-intensity="1"
     exposure="1"
     poster=""
     loading="eager"
   >
-    <!-- AR 버튼 슬롯 -->
     <button slot="ar-button" id="ar-button">AR로 감상하기</button>
   </model-viewer>
 
@@ -202,7 +201,7 @@
     });
 
     // AR 시작 시 오디오 자동재생
-    //const audioSrc = 'assets/01.dani.wav';
+    // const audioSrc = 'assets/01.dani.wav';
     let audio = null;
 
     viewer.addEventListener('ar-status', (e) => {
@@ -212,9 +211,7 @@
           audio.loop = false;
         }
         audio.currentTime = 0;
-        audio.play().catch(() => {
-          // 브라우저 정책으로 차단될 경우 무시
-        });
+        audio.play().catch(() => {});
       }
       if (e.detail.status === 'not-presenting') {
         if (audio) {
